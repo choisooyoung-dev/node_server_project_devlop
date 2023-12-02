@@ -1,10 +1,9 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
-const usersRouter = require("./routes/users.router");
-const { sequelize } = require("./models/index");
-const productsRouter = require("./routes/products.router");
-const ErrorHandler = require("./middlewares/error-middleware");
+const usersRouter = require("../routers/users.router");
+const productsRouter = require("../routers/products.router");
+const ErrorHandler = require("../middlewares/error-middleware");
 const app = express();
 
 sequelize
