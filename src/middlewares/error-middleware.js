@@ -1,4 +1,4 @@
-const ErrorHandler = (err, req, res, next) => {
+export const ErrorHandler = (err, req, res, next) => {
     console.log(err);
 
     // ------------------------------------------------------------------------------
@@ -206,5 +206,3 @@ const ErrorHandler = (err, req, res, next) => {
         }
     }
 };
-
-module.exports = ErrorHandler;

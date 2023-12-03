@@ -1,12 +1,12 @@
 // ------------------------------------------------------------------------------
 // Schema Validation, Joi
 
-const Joi = require("joi");
+import Joi from "joi";
 
 const productSchemaValidation = Joi.object({
-    title: Joi.string().required().trim(),
-    content: Joi.string().required().trim(),
-    price: Joi.string().required().trim(),
+    productName: Joi.string().required().trim(),
+    productContent: Joi.string().required().trim(),
+    price: Joi.number().required(),
     status: Joi.string().valid("FOR_SALE", "SOLD_OUT").trim(),
 });
 
@@ -22,7 +22,7 @@ const userLoginSchemaValidation = Joi.object({
     password: Joi.string().min(6).required().trim(),
 });
 
-module.exports = {
+export {
     productSchemaValidation,
     userSchemaValidation,
     userLoginSchemaValidation,

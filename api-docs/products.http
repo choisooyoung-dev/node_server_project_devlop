@@ -1,0 +1,21 @@
+###
+# 상품 생성
+POST http://localhost:3000/api/products/new
+Content-Type: application/json
+
+{
+    "productName":"바나나",
+    "price": 3000,
+    "productContent": "바나나 비싸유"
+} 
+
+###
+# 상품 목록 조회
+GET http://localhost:3000/api/products
+Content-Type: application/json
+
+{
+    "productName":"바나나",
+    "price": 3000,
+    "productContent": "바나나 비싸유"
+} 
