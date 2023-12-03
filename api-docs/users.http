@@ -1,0 +1,16 @@
+###
+# 회원가입
+POST http://localhost:3000/api/users/signup
+Content-Type: application/json
+
+{
+    "email":"soo2@naver.com",
+    "password":"123445677",
+    "confirmPassword":"123445677",
+    "username":"tndud2"
+} 
+
+
+###
+# 사용자 정보조회
+GET http://localhost:3000/api/users/1
