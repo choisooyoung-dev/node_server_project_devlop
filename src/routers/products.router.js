@@ -1,23 +1,23 @@
-const express = require("express");
-const authMiddleware = require("../middlewares/auth-middleware");
+import express from "express";
+import authMiddleware from "../middlewares/auth-middleware.js";
+import { prisma } from "../utils/prisma/index.js";
+import { Prisma } from "@prisma/client";
 const router = express.Router();
-const { Users, Products, sequelize } = require("../models");
-const { Op } = require("sequelize");
-const {
+// const { Op } = require("sequelize");
+import {
     ProductsNotExistError,
-
     WrongPathError,
     ProductNotExistError,
     UnauthUserError,
-} = require("../lib/error-lists");
-const { productSchemaValidation } = require("../lib/schema-validation");
+} from "../lib/error-lists.js";
+import { productSchemaValidation } from "../lib/schema-validation.js";
 
 // 상품 글 생성
-router.post("/products/new", authMiddleware, async (req, res, next) => {
+router.post("/new", authMiddleware, async (req, res, next) => {
     try {
         const { userId } = res.locals.user;
 
-        const { title, content, price } =
+        const { productName, productContent, price, status } =
             await productSchemaValidation.validateAsync(req.body);
 
         // if (!title || !content || price <= 0 || !status) {
@@ -25,11 +25,14 @@ router.post("/products/new", authMiddleware, async (req, res, next) => {
         //     throw error;
         // }
 
-        const product = await Products.create({
-            UserId: userId,
-            title,
-            content,
-            price,
+        const product = await prisma.products.create({
+            data: {
+                UserId: userId,
+                productName,
+                productContent,
+                price,
+                status,
+            },
         });
 
         return res.status(201).json({ data: product });
@@ -39,39 +42,32 @@ router.post("/products/new", authMiddleware, async (req, res, next) => {
 });
 
 // 상품 글 목록 조회
-router.get("/products", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
         // url querystring
         const queryData = req.query.sort;
-        let sortWord = "DESC";
+        let sortWord = "desc";
 
         if (queryData === undefined || queryData.toLowerCase() === "desc") {
-            sortWord = "DESC";
+            sortWord = "desc";
         } else if (queryData.toLowerCase() === "asc") {
-            sortWord = "ASC";
+            sortWord = "desc";
         } else {
             const error = new WrongPathError();
             throw error;
         }
 
-        const products = await Products.findAll({
-            attributes: [
-                "productId",
-                [sequelize.col("username"), "username"],
-                "title",
-                "content",
-                "status",
-                "price",
-                "createdAt",
-                "updatedAt",
-            ],
-            include: [
-                {
-                    model: Users,
-                    attributes: [],
-                },
-            ],
-            order: [["createdAt", sortWord]],
+        const products = await prisma.products.findMany({
+            select: {
+                productId: true,
+                productName: true,
+                productContent: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+            orderBy: {
+                createdAt: sortWord,
+            },
         });
 
         if (!products) {
@@ -87,29 +83,23 @@ router.get("/products", async (req, res, next) => {
 });
 
 // 상품 상세 조회
-router.get("/products/:productId", async (req, res, next) => {
+router.get("/:productId", async (req, res, next) => {
     try {
         const { productId } = req.params;
 
         // 상품, 사용자 join
-        const product = await Products.findOne({
-            attributes: [
-                "productId",
-                [sequelize.col("username"), "username"],
-                "title",
-                "content",
-                "status",
-                "price",
-                "createdAt",
-                "updatedAt",
-            ],
-            include: [
-                {
-                    model: Users,
-                    attributes: [],
-                },
-            ],
-            where: { productId },
+        const product = await prisma.products.findFirst({
+            where: {
+                productId: +productId,
+            },
+            select: {
+                productName: true,
+                productContent: true,
+                status: true,
+                price: true,
+                createdAt: true,
+                updatedAt: true,
+            },
         });
 
         if (!product) {
@@ -125,15 +115,29 @@ router.get("/products/:productId", async (req, res, next) => {
 });
 
 // 상품 수정
-router.put("/products/:productId", authMiddleware, async (req, res, next) => {
+router.put("/:productId", authMiddleware, async (req, res, next) => {
     try {
         const { productId } = req.params;
         const { userId } = res.locals.user;
 
-        const { title, content, price, status } =
+        const { productName, productContent, price, status } =
             await productSchemaValidation.validateAsync(req.body);
 
-        const product = await Products.findOne({ where: { productId } });
+        const product = await prisma.products.findUnique({
+            where: {
+                productId: +productId,
+            },
+            select: {
+                UserId: true,
+                productName: true,
+                productContent: true,
+                status: true,
+                price: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+
         if (!product) {
             const error = new ProductNotExistError();
             throw error;
@@ -142,45 +146,63 @@ router.put("/products/:productId", authMiddleware, async (req, res, next) => {
             throw error;
         }
 
-        const updateProduct = { title, content, price, status };
-        await Products.update(updateProduct, {
-            where: { [Op.and]: [{ productId }, { UserId: userId }] },
+        await prisma.products.update({
+            where: { productId: +productId },
+            data: {
+                productName,
+                productContent,
+                price,
+                status,
+            },
         });
-        return res.status(201).json({ data: updateProduct });
+
+        const updatedProduct = await prisma.products.findUnique({
+            where: { productId: +productId },
+            select: {
+                UserId: true,
+                productName: true,
+                productContent: true,
+                price: true,
+                status: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+        return res.status(201).json({ data: updatedProduct });
     } catch (error) {
         next(error);
     }
 });
 
 // 상품 삭제
-router.delete(
-    "/products/:productId",
-    authMiddleware,
-    async (req, res, next) => {
-        try {
-            const { productId } = req.params;
-            const { userId } = res.locals.user;
+router.delete("/:productId", authMiddleware, async (req, res, next) => {
+    try {
+        const { productId } = req.params;
+        const { userId } = res.locals.user;
 
-            const product = await Products.findOne({ where: { productId } });
+        const product = await prisma.products.findUnique({
+            where: { productId: +productId },
+        });
 
-            if (!product) {
-                const error = new ProductNotExistError();
-                throw error;
-            } else if (product.UserId !== userId) {
-                const error = new UnauthUserError();
-                throw error;
-            }
-
-            // 삭제
-            await Products.destroy({
-                where: { [Op.and]: [{ productId }, { UserId: userId }] },
-            });
-
-            return res.status(200).json({ message: "상품이 삭제되었습니다." });
-        } catch (error) {
-            next(error);
+        if (!product) {
+            const error = new ProductNotExistError();
+            throw error;
+        } else if (product.UserId !== userId) {
+            const error = new UnauthUserError();
+            throw error;
         }
-    }
-);
 
-module.exports = router;
+        // 삭제
+        await prisma.products.delete({
+            where: {
+                productId: +productId,
+            },
+        });
+
+        return res.status(200).json({ message: "상품이 삭제되었습니다." });
+    } catch (error) {
+        next(error);
+    }
+});
+
+export default router;

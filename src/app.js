@@ -1,8 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import usersRouter from "../src/routers/users.router.js";
-import productsRouter from "../src/routers/products.router.js";
+import router from "./routers/index.js";
 import { ErrorHandler } from "../src/middlewares/error-middleware.js";
 
 const app = express();
@@ -22,7 +21,7 @@ app.use(morgan("dev")); // 로그
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false })); // uri 파싱
-app.use("/api", [usersRouter, productsRouter]);
+app.use("/api", router);
 
 // Error Handler
 app.use(ErrorHandler);
