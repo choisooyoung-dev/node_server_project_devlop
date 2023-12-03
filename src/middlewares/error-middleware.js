@@ -72,7 +72,7 @@ export const ErrorHandler = (err, req, res, next) => {
     // ------------------------------------------------------------------------------
     // LOGIN
 
-    if (req.route.path === "/users/login") {
+    if (req.route.path === "/login") {
         if (err.name === "ValidationError") {
             res.status(412);
             if (err.details[0].path[0] === "email") {
@@ -88,7 +88,6 @@ export const ErrorHandler = (err, req, res, next) => {
             return res
                 .status(400)
                 .json({ message: "존재하지 않는 이메일입니다." });
-
         if (err.name === "PasswordMismatchError")
             return res
                 .status(400)

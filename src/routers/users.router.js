@@ -59,6 +59,7 @@ router.post("/signup", async (req, res, next) => {
         await prisma.users.create({
             data: { email, password: hashPW, username },
         });
+
         const user = await prisma.users.findFirst({
             where: { email },
             select: {

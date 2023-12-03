@@ -6,15 +6,6 @@ import { ErrorHandler } from "../src/middlewares/error-middleware.js";
 
 const app = express();
 
-// sequelize
-//     .sync({ force: false })
-//     .then(() => {
-//         console.log("데이터베이스 연결됨.");
-//     })
-//     .catch((err) => {
-//         console.error(err);
-//     });
-
 app.set("port", process.env.PORT || 3000);
 
 app.use(morgan("dev")); // 로그
