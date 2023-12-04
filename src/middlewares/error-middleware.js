@@ -32,7 +32,7 @@ export const ErrorHandler = (err, req, res, next) => {
     // ------------------------------------------------------------------------------
     // SIGNUP
 
-    if (req.route.path === "/users/signup") {
+    if (req.route.path === "/signup") {
         if (err.name === "ValidationError") {
             res.status(412);
             if (err.details[0].path[0] === "email") {
@@ -96,14 +96,14 @@ export const ErrorHandler = (err, req, res, next) => {
 
     // ------------------------------------------------------------------------------
     // LOGOUT
-    if (req.route.path === "/users/logout") {
+    if (req.route.path === "/logout") {
         return res.status(400).json({ message: "이미 로그아웃 됐습니다." });
     }
 
     // ------------------------------------------------------------------------------
     // USER DETAIL
 
-    if (req.route.path === "/users/:userId") {
+    if (req.route.path === "/:userId") {
         if (err.name === "UnauthUserError") {
             return res
                 .status(400)
@@ -114,7 +114,7 @@ export const ErrorHandler = (err, req, res, next) => {
     // -------------------------------------------------------------------------------
     // PRODUCT
     // CREATE
-    if (req.route.path === "/products/new") {
+    if (req.route.path === "/new") {
         if (err.name === "QuerySyntaxError") {
             return res
                 .status(401)
@@ -136,7 +136,7 @@ export const ErrorHandler = (err, req, res, next) => {
     }
 
     // READ
-    if (req.route.path === "/products") {
+    if (req.route.path === "/") {
         if (err.name === "WrongPathError") {
             return res.status(400).json({ message: "잘못된 경로 입니다." });
         }
@@ -147,7 +147,7 @@ export const ErrorHandler = (err, req, res, next) => {
         }
     }
 
-    if (req.route.path === "/products/:productId") {
+    if (req.route.path === "/:productId") {
         if (req.method === "GET") {
             if (err.name === "ProductNotExistError") {
                 return res

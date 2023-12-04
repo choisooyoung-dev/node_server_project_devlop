@@ -1,15 +1,6 @@
 import { AuthService } from "../services/auth.service.js";
-import {
-    userSchemaValidation,
-    userLoginSchemaValidation,
-} from "../lib/schema-validation.js";
-import {
-    EmailExistError,
-    UsernameExistError,
-    EmailNotExistError,
-    PasswordMismatchError,
-    UnauthUserError,
-} from "../lib/error-lists.js";
+import { userLoginSchemaValidation } from "../lib/schema-validation.js";
+import { PasswordMismatchError } from "../lib/error-lists.js";
 
 export class AuthController {
     authService = new AuthService();
@@ -21,12 +12,6 @@ export class AuthController {
                 await userLoginSchemaValidation.validateAsync(req.body);
 
             const user = await this.authService.login(email, password);
-            console.log(user);
-
-            if (!user.user) {
-                const err = new EmailNotExistError();
-                throw err;
-            }
 
             if (!user.check) {
                 const err = new PasswordMismatchError();
