@@ -1,19 +1,10 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const morgan = require("morgan");
-const usersRouter = require("../routers/users.router");
-const productsRouter = require("../routers/products.router");
-const ErrorHandler = require("../middlewares/error-middleware");
-const app = express();
+import express from "express";
+import cookieParser from "cookie-parser";
+import morgan from "morgan";
+import router from "./routers/index.js";
+import { ErrorHandler } from "../src/middlewares/error-middleware.js";
 
-sequelize
-    .sync({ force: false })
-    .then(() => {
-        console.log("데이터베이스 연결됨.");
-    })
-    .catch((err) => {
-        console.error(err);
-    });
+const app = express();
 
 app.set("port", process.env.PORT || 3000);
 
@@ -21,7 +12,7 @@ app.use(morgan("dev")); // 로그
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false })); // uri 파싱
-app.use("/api", [usersRouter, productsRouter]);
+app.use("/api", router);
 
 // Error Handler
 app.use(ErrorHandler);

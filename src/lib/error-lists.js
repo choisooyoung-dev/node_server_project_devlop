@@ -96,7 +96,7 @@ class ProductNotExistError extends Error {
     }
 }
 
-module.exports = {
+export {
     EmailExistError,
     UsernameExistError,
     ConfirmPasswordMismatchError,

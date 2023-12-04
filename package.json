@@ -5,8 +5,9 @@
     "repository": "https://github.com/choisooyoung-dev/node_server_project.git",
     "author": "sooyoung.choi <sooyoung.choi.dev@gmail.com>",
     "license": "MIT",
+    "type": "module",
     "scripts": {
-        "dev": "nodemon app"
+        "dev": "nodemon src/app"
     },
     "dependencies": {
         "@prisma/client": "^5.6.0",
