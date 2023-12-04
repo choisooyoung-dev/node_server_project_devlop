@@ -6,19 +6,6 @@ export class ProductsController {
 
     // 상품 글 목록 조회
     getAllProducts = async (req, res, next) => {
-        // url querystring
-        // const queryData = req.query.sort;
-        // let sortWord = "desc";
-
-        // if (queryData === undefined || queryData.toLowerCase() === "desc") {
-        //     sortWord = "desc";
-        // } else if (queryData.toLowerCase() === "asc") {
-        //     sortWord = "desc";
-        // } else {
-        //     const error = new WrongPathError();
-        //     throw error;
-        // }
-
         try {
             const proucts = await this.productService.findAllProducts();
             return res.status(200).json({ data: proucts });

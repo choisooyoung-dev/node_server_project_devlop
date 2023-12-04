@@ -5,7 +5,6 @@ import {
     TokenUserNotExistError,
 } from "../lib/error-lists.js";
 import { prisma } from "../utils/prisma/index.js";
-import { Prisma } from "@prisma/client";
 
 export default async (req, res, next) => {
     try {

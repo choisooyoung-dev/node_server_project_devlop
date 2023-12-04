@@ -6,7 +6,6 @@ export class UsersService {
     signup = async (email, password, username) => {
         const salt = await bcrypt.genSalt(12);
         const hashPW = await bcrypt.hash(password, salt);
-        // password = hashPW;
         const createdUser = await this.usersRepository.signup(
             email,
             hashPW,

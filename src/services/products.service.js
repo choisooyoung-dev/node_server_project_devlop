@@ -1,10 +1,5 @@
 import { ProductsRepository } from "../repositories/products.repository.js";
-import {
-    ProductsNotExistError,
-    WrongPathError,
-    ProductNotExistError,
-    UnauthUserError,
-} from "../lib/error-lists.js";
+import { ProductNotExistError, UnauthUserError } from "../lib/error-lists.js";
 
 export class ProductsService {
     productsRepository = new ProductsRepository();
@@ -117,7 +112,6 @@ export class ProductsService {
     };
 
     deleteProduct = async (productId, userId) => {
-        // console.log("productId: ", productId);
         const deleteProduct = await this.productsRepository.findDetailProduct(
             productId,
             userId

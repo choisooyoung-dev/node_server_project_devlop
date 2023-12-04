@@ -204,4 +204,8 @@ export const ErrorHandler = (err, req, res, next) => {
             }
         }
     }
+
+    res.status(500).json({
+        message: "알 수 없는 오류입니다. 관리자에게 문의하세요.",
+    });
 };
