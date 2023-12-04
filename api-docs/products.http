@@ -4,9 +4,9 @@ POST http://localhost:3000/api/products/new
 Content-Type: application/json
 
 {
-    "productName":"감a",
-    "price": 5000,
-    "productContent": "수박 비싸유"
+    "productName":"탕수육",
+    "price": 7000,
+    "productContent": "배불배불"
 } 
  
 ###
@@ -15,11 +15,11 @@ GET http://localhost:3000/api/products
 
 ###
 # 상품 상세 조회
-GET http://localhost:3000/api/products/6
-
+GET http://localhost:3000/api/products/233
+ 
 ###
 # 상품 수정
-PUT http://localhost:3000/api/products/7
+PUT http://localhost:3000/api/products/4
 Content-Type: application/json
 
 {
@@ -27,8 +27,8 @@ Content-Type: application/json
     "status":"SOLD_OUT",
     "price": 3000,
     "productContent": "다팔림"
-}  
-
+}   
+ 
 ###
 # 상품 삭제
-DELETE  http://localhost:3000/api/products/8
+DELETE  http://localhost:3000/api/products/9

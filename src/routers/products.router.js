@@ -20,53 +20,11 @@ router.post("/new", authMiddleware, productsController.createProduct);
 // 상품 글 목록 조회
 router.get("/", productsController.getAllProducts);
 
-// if (!products) {
-//     const error = new ProductsNotExistError();
-//     throw error;
-// }
-
 // 상품 상세 조회
-router.get("/:productId", async (req, res, next) => {
-    try {
-        const { productId } = req.params;
-
-        // 상품, 사용자 join
-        const product = await prisma.products.findFirst({
-            where: {
-                productId: +productId,
-            },
-            select: {
-                productName: true,
-                productContent: true,
-                status: true,
-                price: true,
-                createdAt: true,
-                updatedAt: true,
-            },
-        });
-
-        if (!product) {
-            const error = new ProductNotExistError();
-            throw error;
-        }
-
-        // console.log(product);
-        return res.status(201).json({ data: product });
-    } catch (error) {
-        next(error);
-    }
-});
+router.get("/:productId", productsController.getDetailProduct);
 
 // 상품 수정
 router.put("/:productId", authMiddleware, productsController.updateProuct);
-
-// if (!product) {
-//     const error = new ProductNotExistError();
-//     throw error;
-// } else if (product.UserId !== userId) {
-//     const error = new UnauthUserError();
-//     throw error;
-// }
 
 // 상품 삭제
 router.delete("/:productId", authMiddleware, productsController.deleteProduct);

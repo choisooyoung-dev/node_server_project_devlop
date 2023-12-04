@@ -3,9 +3,21 @@ import { prisma } from "../utils/prisma/index.js";
 export class ProductsRepository {
     // 게시글 목록 조회
     findAllProducts = async () => {
-        const products = await prisma.products.findMany();
+        const products = await prisma.products.findMany({
+            orderBy: { createdAt: "desc" },
+        });
 
         return products;
+    };
+
+    // 게시글 상세조회
+
+    findDetailProduct = async (productId) => {
+        const product = await prisma.products.findUnique({
+            where: { productId: +productId },
+        });
+
+        return product;
     };
 
     // 게시글 생성
@@ -42,10 +54,11 @@ export class ProductsRepository {
     };
 
     // 게시글 삭제
-    deleteProduct = async (productId) => {
+    deleteProduct = async (productId, userId) => {
         const deletedProduct = await prisma.products.delete({
             where: {
                 productId: +productId,
+                userId: +userId,
             },
         });
 

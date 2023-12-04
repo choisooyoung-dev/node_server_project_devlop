@@ -123,10 +123,10 @@ export const ErrorHandler = (err, req, res, next) => {
 
         if (err.name === "ValidationError") {
             res.status(412);
-            if (err.details[0].path[0] === "title") {
+            if (err.details[0].path[0] === "productName") {
                 return res.json({ message: "제목을 작성해주세요." });
             }
-            if (err.details[0].path[0] === "content") {
+            if (err.details[0].path[0] === "productContent") {
                 return res.json({ message: "내용을 작성해주세요." });
             }
             if (err.details[0].path[0] === "price") {
@@ -172,10 +172,10 @@ export const ErrorHandler = (err, req, res, next) => {
 
             if (err.name === "ValidationError") {
                 res.status(412);
-                if (err.details[0].path[0] === "title") {
+                if (err.details[0].path[0] === "productName") {
                     return res.json({ message: "제목을 작성해주세요." });
                 }
-                if (err.details[0].path[0] === "content") {
+                if (err.details[0].path[0] === "productContent") {
                     return res.json({ message: "내용을 작성해주세요." });
                 }
                 if (err.details[0].path[0] === "price") {

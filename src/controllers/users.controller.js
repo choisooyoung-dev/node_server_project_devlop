@@ -6,10 +6,7 @@ import {
     PasswordMismatchError,
     UnauthUserError,
 } from "../lib/error-lists.js";
-import {
-    userSchemaValidation,
-    userLoginSchemaValidation,
-} from "../lib/schema-validation.js";
+import { userSchemaValidation } from "../lib/schema-validation.js";
 
 export class UsersController {
     userService = new UsersService();

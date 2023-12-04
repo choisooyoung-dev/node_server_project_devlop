@@ -1,4 +1,10 @@
 import { ProductsRepository } from "../repositories/products.repository.js";
+import {
+    ProductsNotExistError,
+    WrongPathError,
+    ProductNotExistError,
+    UnauthUserError,
+} from "../lib/error-lists.js";
 
 export class ProductsService {
     productsRepository = new ProductsRepository();
@@ -6,6 +12,11 @@ export class ProductsService {
     // 게시글 목록 조회
     findAllProducts = async () => {
         const products = await this.productsRepository.findAllProducts();
+
+        if (!products) {
+            const error = new ProductNotExistError();
+            throw error;
+        }
 
         return products.map((product) => {
             return {
@@ -26,6 +37,11 @@ export class ProductsService {
         const product = await this.productsRepository.findDetailProduct(
             productId
         );
+
+        if (!product) {
+            const error = new ProductNotExistError();
+            throw error;
+        }
 
         return {
             productId: product.productId,
@@ -61,11 +77,26 @@ export class ProductsService {
     // 게시글 수정
     updateProduct = async (
         productId,
+        userId,
         productName,
         price,
         status,
         productContent
     ) => {
+        const product = await this.productsRepository.findDetailProduct(
+            productId,
+            userId
+        );
+
+        if (!product) {
+            const error = new ProductNotExistError();
+            throw error;
+        }
+        if (product.UserId !== userId) {
+            const error = new UnauthUserError();
+            throw error;
+        }
+
         const updatedProduct = await this.productsRepository.updateProduct(
             productId,
             productName,
@@ -85,7 +116,22 @@ export class ProductsService {
         };
     };
 
-    deleteProduct = async (productId) => {
+    deleteProduct = async (productId, userId) => {
+        // console.log("productId: ", productId);
+        const deleteProduct = await this.productsRepository.findDetailProduct(
+            productId,
+            userId
+        );
+
+        if (!deleteProduct) {
+            const error = new ProductNotExistError();
+            throw error;
+        }
+        if (deleteProduct.UserId !== userId) {
+            const error = new UnauthUserError();
+            throw error;
+        }
+
         await this.productsRepository.deleteProduct(productId);
     };
 }

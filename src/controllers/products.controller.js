@@ -1,12 +1,26 @@
 import { ProductsService } from "../services/products.service.js";
+import { productSchemaValidation } from "../lib/schema-validation.js";
 
 export class ProductsController {
     productService = new ProductsService();
 
     // 상품 글 목록 조회
     getAllProducts = async (req, res, next) => {
+        // url querystring
+        // const queryData = req.query.sort;
+        // let sortWord = "desc";
+
+        // if (queryData === undefined || queryData.toLowerCase() === "desc") {
+        //     sortWord = "desc";
+        // } else if (queryData.toLowerCase() === "asc") {
+        //     sortWord = "desc";
+        // } else {
+        //     const error = new WrongPathError();
+        //     throw error;
+        // }
+
         try {
-            const proucts = await this.productService.findAllProducts;
+            const proucts = await this.productService.findAllProducts();
             return res.status(200).json({ data: proucts });
         } catch (err) {
             next(err);
@@ -31,22 +45,10 @@ export class ProductsController {
     // 게시글 생성
     createProduct = async (req, res, next) => {
         try {
-            // url querystring
-            const queryData = req.query.sort;
-            let sortWord = "desc";
-
-            if (queryData === undefined || queryData.toLowerCase() === "desc") {
-                sortWord = "desc";
-            } else if (queryData.toLowerCase() === "asc") {
-                sortWord = "desc";
-            } else {
-                const error = new WrongPathError();
-                throw error;
-            }
-
             const { userId } = res.locals.user;
 
-            const { productName, price, productContent } = req.body;
+            const { productName, price, productContent } =
+                await productSchemaValidation.validateAsync(req.body);
 
             const createdProduct = await this.productService.createProduct(
                 userId,
@@ -64,12 +66,13 @@ export class ProductsController {
     updateProuct = async (req, res, next) => {
         try {
             const { productId } = req.params;
-            // console.log("productId: ", productId);
+            const { userId } = res.locals.user;
             const { productName, price, status, productContent } =
-                await req.body;
+                await productSchemaValidation.validateAsync(req.body);
 
             const updatedProduct = await this.productService.updateProduct(
                 productId,
+                userId,
                 productName,
                 price,
                 status,
@@ -87,9 +90,11 @@ export class ProductsController {
     deleteProduct = async (req, res, next) => {
         try {
             const { productId } = req.params;
+            const { userId } = res.locals.user;
 
             const deletedProduct = await this.productService.deleteProduct(
-                productId
+                productId,
+                userId
             );
 
             return res.status(200).json({ message: "게시글 삭제 성공" });
