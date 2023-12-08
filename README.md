@@ -1,7 +1,5 @@
 # node_server_project
-- [프로젝트 링크](http://s00.shop:3000/api/products)
-- [프로젝트 링크 상품 최신순 정렬(기본값)](http://s00.shop:3000/api/products?sort=desc)
-- [프로젝트 링크 상품 등록순 정렬](http://s00.shop:3000/api/products?sort=asc)
+- [프로젝트 링크](http://13.125.216.232:3000/api/products)
 
 ## 프로젝트 개요
 
@@ -11,9 +9,9 @@
 
 <br  />
 
-2.  **MySQL과 Sequelize를 이용한 데이터베이스 설계**
+2.  **MySQL과 Prisma 이용한 데이터베이스 설계**
 
--   ERD 작성 및 Sequelize를 사용한 마이그레이션 코드와 스키마 코드 작성
+-   ERD 작성 및 Prisma 사용한 마이그레이션 코드와 스키마 코드 작성
 
 -   [ERD 명세서](https://www.erdcloud.com/d/WKRMdGWujQa8r5Q4X)
 
@@ -51,39 +49,54 @@
 
     <img  src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
 
-    <img  src="https://img.shields.io/badge/sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white">
+    <img  src="https://img.shields.io/badge/prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white">
 
 <br  />
 
 <br  />
 
-5.  **프로젝트 구조**
+5.  **3계층 아키텍처 프로젝트 구조**
 
     ```bash
 
-        📦config
-        ┗  📜config.js
+        📦api-docs
+         ┣ 📜auth.http
+         ┣ 📜products.http
+         ┗ 📜users.http
+
+        📦prisma
+         ┗ 📜schema.prisma
     
-        📦lib
-         ┣ 📜error-lists.js
-         ┗ 📜schema-validation.js
-    
-        📦middlewares
-         ┣ 📜auth-middleware.js
-         ┗ 📜error-middleware.js
-    
-        📦migrations
-        ┣  📜20231112094443-create-users.js
-        ┗  📜20231112094519-create-products.js
-    
-        📦models
-        ┣  📜index.js
-        ┣  📜products.js
-        ┗  📜users.js
-    
-        📦routes
-        ┣  📜products.router.js
-        ┗  📜users.router.js
+        📦src
+         ┣ 📂config
+         ┃ ┗ 📜config.js
+         ┣ 📂controllers
+         ┃ ┣ 📜auth.controller.js
+         ┃ ┣ 📜products.controller.js
+         ┃ ┗ 📜users.controller.js
+         ┣ 📂lib
+         ┃ ┣ 📜error-lists.js
+         ┃ ┗ 📜schema-validation.js
+         ┣ 📂middlewares
+         ┃ ┣ 📜auth-middleware.js
+         ┃ ┗ 📜error-middleware.js
+         ┣ 📂repositories
+         ┃ ┣ 📜auth.repository.js
+         ┃ ┣ 📜products.repository.js
+         ┃ ┗ 📜users.repository.js
+         ┣ 📂routers
+         ┃ ┣ 📜auth.router.js
+         ┃ ┣ 📜index.js
+         ┃ ┣ 📜products.router.js
+         ┃ ┗ 📜users.router.js
+         ┣ 📂services
+         ┃ ┣ 📜auth.service.js
+         ┃ ┣ 📜products.service.js
+         ┃ ┗ 📜users.service.js
+         ┣ 📂utils
+         ┃ ┗ 📂prisma
+         ┃ ┃ ┗ 📜index.js
+         ┗ 📜app.js
 
     ```
 
@@ -94,6 +107,8 @@
 -   `.env` 파일을 이용하여 민감한 정보 관리
 
     ```bash
+    DATABASE_URL
+    
     MYSQL_USERNAME
 
     MYSQL_PASSWORD
@@ -173,7 +188,7 @@
 
 # 프로젝트 클론
 
-git  clone  https://github.com/choisooyoung-dev/node_server_project.git
+git  clone  https://github.com/choisooyoung-dev/node_server_project_develop.git
 
 ```
 
@@ -193,77 +208,30 @@ yarn  dev
 
 ```
 
-## 📢 더 고민해 보기
+# 📢 더 고민해 보기
 
-### **암호화 방식**
+## 1. Class와 Instance가 각각 무엇인지 설명해 주세요.
+- Class: 객체를 만들기 위한 템플릿 (명세서)
+- Instance: 클래스를 기반으로 생성된 객체, 클래스의 속성과 메서드를 상속받는다.
 
-1. 비밀번호를 DB에 저장할 때 Hash를 이용했는데, Hash는 단방향 암호화와 양방향 암호화 중 어떤 암호화 방식에 해당할까요?
+## 2. Class의 Method는 화살표 함수(Arrow Function) 형태로 구현하지 않았을 때 발생할 수 있는 문제와 해당 문제를 해결할 수 있는 다른 방법을 적어주세요. (**Hint**: `this bind`)
+- this 바인딩 문제가 발생한다. -> 자신만의 this를 생성하는 것이 아니라 외부 스코프의 this를 가져온다.
+- bind 메서드를 사용하여 함수에 원하는 this값을 명시적으로 할당해준다.
 
-    - Hash는 단방향 암호화 입니다.
+## 3. 3-Layered Architecture의 장점과 단점을 아는대로 적어주세요.
+- 장점: 모듈화, 유지보수 용이, 재사용성, 확장성, 테스트 용이
+- 단점: 설계하는 시간이 오래걸린다, 작은 규모의 애플리케이션에서는 복잡성이 증가한다.
 
-2. 비밀번호를 그냥 저장하지 않고 Hash 한 값을 저장 했을 때의 좋은 점은 무엇인가요?
+## 4. 숙련주차 과제에서 Mongoose를 Sequelize로 교체 했을 때와 비교하여 이번 과제에서 Sequelize를 Prisma로 교체하는 작업은 더 쉬웠나요? 더 어려웠나요? 왜 그런지 3-Layered Architecture를 기반으로 설명해 주세요.
+- Prisma로 교체하는 것이 더 쉬웠습니다.
+- schema 파일 자체가 알아보기 훨씬 쉬웠으며, repository 파일에서 관리했을때 한 곳에서 db 관련 코드를 한번에 볼 수 있었으며 시퀄라이즈보다 프리즈마 문법이 더 가독성이 좋았습니다. 그리고 각 라우터 마다 프리즈마를 import 해줬어야 했는데 3-Layered Architecture 구조로 나눈 후 필요한 파일에서만 import하여 썼기 때문에 더 간편했습니다.
 
-    - 평문으로 저장하는 것에 비해 해시값을 저장하는 것이 훨씬 안전하며, 단방향이기 때문에 원본 데이터로의 역변환이 불가능 합니다.
-    - 원본 비밀번호를 알지 못하면 해시값을 다시 원래 비밀번호로 돌려놓을 수 없기 때문에 보안이 강화됩니다.
+## 5. 테스트코드 작성의 장점과 단점을 아는대로 적어주세요.
+- 장점: 프로그램의 동작을 검증하는 작업이므로 버그를 미리 찾아내고 수정할 수 있다, 코드의 동작 예시를 미리 제공하는 것이므로 코드의 의도를 명확하게 파악할 수 있습니다.(문서화 역할)
+- 단점: 추가적인 개발시간이 소요되며, 유지보수 비용이 증가합니다
 
-**인증 방식**
+## 6. 테스트의 종류 3가지와 각각이 무엇인지 간단히 설명해 주세요.
+1) 단위 테스트: 모듈, 함수, 클래스 등 최소 단위의 코드를 테스트 하는 것 -> 코드가 의도한 대로 동작하는 지 검증, 성공 시 대부분 정상 동작할 것으로 기대된다.
+2) 통합 테스트: 단위 테스트가 통과한 모듈들을 결합하여 전체 시스템이 의도한 대로 동작하는 지 확인하는 것 -> 실제 운영 환경과 유사하게 수행된다.
+3) 인수 테스트: 최종 사용자인 클라이언트의 요구사항을 만족하는 지 확인하는 것, 전체 시스템의 완전한 기능을 테스트한다. -> 사용자 시나리오 기반 테스트 케이스를 작성하며 요구사항 충족하는 지 확인한다. 
 
-3.  JWT(Json Web Token)을 이용해 인증 기능을 했는데, 만약 Access Token이 노출되었을 경우 발생할 수 있는 문제점은 무엇일까요?
-
-    -   권한이 남용되어 부정사용이 되고, 계정이 탈취된 상태이므로 서비스를 무단으로 이용하는 문제점이 발생됩니다.
-
-4.  해당 문제점을 보완하기 위한 방법으로는 어떤 것이 있을까요?
-    -   refresh token을 사용합니다.
-
-**인증과 인가**
-
-1. 인증과 인가가 무엇인지 각각 설명해 주세요.
-
-    - 인증: 사용자의 신원 확인 과정으로, 누가 접근하려는 지 확인하는 것
-    - 인가: 인증된 사용자에 대해 특정 자원이나 서비스에 대한 권한을 결정하고 부여하는 것
-
-2. 과제에서 구현한 Middleware는 인증에 해당하나요? 인가에 해당하나요? 그 이유도 알려주세요.
-    - 인증에 해당합니다.
-    - jwt 토큰이 제대로 들어와있는 지에 대해 검증하는 것이기 때문입니다.
-
-**Http Status Code**
-
--   과제를 진행하면서 사용한 Http Status Code를 모두 나열하고, 각각이 의미하는 것과 어떤 상황에 사용했는지 작성해 주세요.
-    -   200 : 클라이언트의 요청을 서버가 정상적으로 처리
-    -   201 : 클라이언트의 요청을 서버가 정상적으로 처리했고 새로운 리소스가 생김
-    -   400 : 클라이언트가 잘못된 요청을 보냄을 의미
-    -   401 : 요청자는 인증(authentication) 되지 않아 수행할 수 없음을 표현
-
-**리팩토링**
-
-1. MongoDB, Mongoose를 이용해 구현되었던 코드를 MySQL, Sequelize로 변경하면서, 많은 코드 변경이 있었나요? 주로 어떤 코드에서 변경이 있었나요?
-
-    - MongoDB는 NoSQL 데이터베이스로 스키마가 유연하게 정의되는 반면 MySQL은 관계형 데이터베이스로 테이블과 스키마가 엄격하게 정의됩니다. 데이터 모델 및 스키마를 MySQL에 맞게 수정해야 합니다.
-
-2. 만약 이렇게 DB를 변경하는 경우가 또 발생했을 때, 코드 변경을 보다 쉽게 하려면 어떻게 코드를 작성하면 좋을 지 생각나는 방식이 있나요? 있다면 작성해 주세요.
-    - ORM을 사용하거나 테스트 주도 개발을 사용합니다.
-
-**서버 장애 복구**
-
-현재는 PM2를 이용해 Express 서버의 구동이 종료 되었을 때에 Express 서버를 재실행 시켜 장애를 복구하고 있습니다.
-만약 단순히 Express 서버가 종료 된 것이 아니라, AWS EC2 인스턴스(VM, 서버 컴퓨터)가 재시작 된다면, Express 서버는 재실행되지 않을 겁니다.
-AWS EC2 인스턴스가 재시작 된 후에도 자동으로 Express 서버를 실행할 수 있게 하려면 어떤 조치를 취해야 할까요?
-(Hint: PM2에서 제공하는 기능 중 하나입니다.)
-
--   서비스로 등록하여 시스템 부팅 시 자동으로 실행되게 합니다.
-    ```
-    pm2 startup
-    pm2 save
-    ```
-
-**개발 환경**
-
-1. nodemon은 어떤 역할을 하는 패키지이며, 사용했을 때 어떤 점이 달라졌나요?
-
-    - 파일 변경을 감지하여 실시간으로 반영해줍니다.
-
-2. npm을 이용해서 패키지를 설치하는 방법은 크게 일반, 글로벌(`--global, -g`), 개발용(`--save-dev, -D`)으로 3가지가 있습니다. 각각의 차이점을 설명하고, nodemon은 어떤 옵션으로 설치해야 될까요?
-    - 일반 : `package.json` 파일의 `dependencies` 항목에 추가됩니다. 특정 프로젝트에 종속됩니다.
-    - 글로벌 : 전역으로 해당 패키지를 설치합니다. 특정 프로젝트에 종속되지 않습니다.
-    - 개발용 : 개발 단계에서만 필요한 종속성으로 설치합니다.
-    - nodemon은 개발 시 코드변경 감지 및 자동 재시작을 지원하기 때문에 개발용으로 설치하는 것이 일반적입니다.
